@@ -6,13 +6,16 @@ import model.Employee;
 import java.sql.*;
 
 public class Application {
+
+
     public static void main(String[] args) throws SQLException {
         final String user = "postgres";
-        final String password = "your_password";
+        final String password = "1111";
         final String url = "jdbc:postgresql://localhost:5432/skypro";
+        final Connection connection = DriverManager.getConnection(url, user, password);
 
         try (
-                final Connection connection = DriverManager.getConnection(url, user, password);
+
                 PreparedStatement statement = connection.prepareStatement("" +
                         "SELECT * FROM employee WHERE id = (?)")) {
             statement.setInt(1, 1);
@@ -29,14 +32,14 @@ public class Application {
 
             }
         }
-        EmployeeDao employeeDao = new EmployeeDaoImpl();
+        EmployeeDao employeeDao = new EmployeeDaoImpl(connection);
         System.out.println(employeeDao.getAllEmployee());
         Employee employee = new Employee(1, "Василий", "Васин", "м", 32, new City(1, "Новосибирск"));
         employeeDao.add(employee);
         System.out.println(employeeDao.getAllEmployee());
         System.out.println();
         employee.setLast_name("Петров");
-        employeeDao.updateEmployee(4,employee);
+        employeeDao.updateEmployee(4, employee);
         System.out.println(employeeDao.getById(4));
         employeeDao.deleteEmployee(1);
         System.out.println();

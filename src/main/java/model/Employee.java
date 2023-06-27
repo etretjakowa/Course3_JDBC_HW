@@ -8,6 +8,15 @@ public class Employee {
     private String gender;
     private int age;
     private City city;
+//
+//    public Employee(int id, String first_name, String last_name, String gender, int age, int city) {
+//        this.id = id;
+//        this.first_name = first_name;
+//        this.last_name = last_name;
+//        this.gender = gender;
+//        this.age = age;
+//        this.city = city;
+//    }
 
     public Employee(int id, String first_name, String last_name, String gender, int age, City city) {
         this.id = id;
@@ -18,7 +27,7 @@ public class Employee {
         this.city = city;
     }
 
-        public Employee() {
+    public Employee() {
 
     }
 
@@ -82,5 +91,6 @@ public class Employee {
                 '}';
     }
 }
+
 
 

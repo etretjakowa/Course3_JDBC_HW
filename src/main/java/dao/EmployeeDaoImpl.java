@@ -8,16 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDaoImpl implements EmployeeDao {
-    private final String user = "postgres";
-    private final String password = "your_password";
-    private final String url = "jdbc:postgresql://localhost:5432/skypro";
+    //    private final String user = "postgres";
+//    private final String password = "1111";
+//    private final String url = "jdbc:postgresql://localhost:5432/skypro";
+    private Connection connection;
 
+    public EmployeeDaoImpl(Connection connection) {
+        this.connection = connection;
+    }
+
+    //    final Connection connection = DriverManager.getConnection(url, user, password);
     @Override
     public void add(Employee employee) {
         try (
-                final Connection connection = DriverManager.getConnection(url, user, password);
+
                 PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO emloyee(first_name,last_name,gender,age, city_id) VALUES((?)(?)(?)(?)(?))");) {
+                        "INSERT INTO employee(first_name,last_name,gender,age, city_id) VALUES((?),(?),(?),(?),(?))")) {
             statement.setInt(1, employee.getId());
             statement.setString(1, employee.getFirst_name());
             statement.setString(2, employee.getLast_name());
@@ -33,9 +39,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public Employee getById(int id) {
+
+//        Employee employee = new Employee();
         Employee employee = new Employee();
         try (
-                final Connection connection = DriverManager.getConnection(url, user, password);
+
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM employee INNER JOIN city " +
                         "ON employee.city_id = city.city_id WHERE id = (?)")) {
             statement.setInt(1, id);
@@ -46,7 +54,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 employee.setLast_name(resultSet.getString("last_name"));
                 employee.setGender(resultSet.getString("gender"));
                 employee.setAge(resultSet.getInt(5));
-                employee.setCity(new City((resultSet.getInt("city_id")), resultSet.getString("city_name")));
+                employee.setCity(new City(resultSet.getInt("city_id"), resultSet.getString("city_name")));
 
             }
         } catch (SQLException e) {
@@ -58,10 +66,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
     @Override
     public List<Employee> getAllEmployee() {
         List<Employee> employees = new ArrayList<>();
-        try (final Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT * FROM employee INNER JOIN city " +
-                             "ON employee.city_id = city.city_id ")) {
+        try (
+                PreparedStatement statement = connection.prepareStatement(
+                        "SELECT * FROM employee INNER JOIN city "+"ON employee.city_id = city.city_id ")) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 int id = Integer.parseInt(resultSet.getString("id"));
@@ -71,19 +78,20 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 int age = Integer.parseInt(resultSet.getString("age"));
                 City city = new City(resultSet.getInt("city_id"),
                         resultSet.getString("city_name"));
-                employees.add(new Employee(id, firstName, lastName,gender,age,city));
+                employees.add(new Employee(id, firstName, lastName, gender, age, city));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } return employees;
+        }
+        return employees;
     }
 
     @Override
     public void updateEmployee(int id, Employee employee) {
         try (
-                final Connection connection = DriverManager.getConnection(url, user, password);
+
                 PreparedStatement statement = connection.prepareStatement(
-                        "UPDATE emloyee SET first_name = (?),last_name = (?),gender = (?),age = (?), city_id = (?) WHERE id = (?))")) {
+                        "UPDATE employee SET first_name = (?),last_name = (?),gender = (?),age = (?), city_id = (?) WHERE id = (?)")) {
 
             statement.setString(1, employee.getFirst_name());
             statement.setString(2, employee.getLast_name());
@@ -102,9 +110,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
     @Override
     public void deleteEmployee(int id) {
         try (
-                final Connection connection = DriverManager.getConnection(url, user, password);
+
                 PreparedStatement statement = connection.prepareStatement(
-                        "DELETE FROM emloyee WHERE id = (?))");) {
+                        "DELETE FROM employee WHERE id = (?)")) {
             statement.setInt(1, id);
             statement.executeUpdate();
 

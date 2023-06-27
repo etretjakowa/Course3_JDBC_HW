@@ -4,7 +4,7 @@ import model.Employee;
 
 import java.util.List;
 
-public interface EmployeeDao {
+    public interface EmployeeDao {
     void add(Employee employee);
 
     Employee getById(int id);
